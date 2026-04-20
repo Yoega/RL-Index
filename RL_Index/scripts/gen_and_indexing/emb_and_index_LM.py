@@ -10,7 +10,6 @@ import numpy as np
 from vllm import LLM
 from argparse import ArgumentParser
 from transformers import AutoTokenizer
-from sentence_transformers import SentenceTransformer
 import pandas as pd
 import os
 import pickle
@@ -60,8 +59,13 @@ def embed_and_index(args):
 
     model_name = args.model.split("/")[-1]
     
-    model = SentenceTransformer(args.model, device=f"cuda:0", trust_remote_code=True)
-    
+    model = LLM(
+        model=args.model,
+        device="cuda:0",
+        task="embed",
+        trust_remote_code=True,
+        seed=42
+    )
     
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     
@@ -107,7 +111,7 @@ def embed_and_index(args):
         faiss.normalize_L2(embedding)
         index.add_with_ids(embedding, np.array([i], dtype=np.int64))
 
-    faiss.write_index(index, f"{output_dir}/{model_name}_{args.index_type}_index.faiss")
+    faiss.write_index(index, f"{output_dir}/LM_{model_name}_{args.index_type}_index.faiss")
     logging.info(f"Indexing done")
 
 
