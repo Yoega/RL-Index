@@ -13,8 +13,6 @@ import time
 
 MODEL_MAX_LEN_DICT = {
     "intfloat/e5-mistral-7b-instruct": 8192,
-    "Salesforce/SFR-Embedding-Mistral": 4090,
-    "GritLM/GritLM-7B": 8192,
     "Alibaba-NLP/gte-Qwen1.5-7B-instruct": 16384,
 }
 
@@ -55,6 +53,19 @@ def calculate_ndcg(predicted_ranks: List[int], true_relevance: Dict[str, int], k
         return 0.0
     
     return dcg / idcg
+
+def calculate_recall(predicted_ranks: List[int], true_relevance: Dict[str, int], k: int) -> float:
+    """Calculate Recall@k for a single query"""
+    # Count relevant documents in top-k
+    relevant_in_topk = sum(1 for rank in predicted_ranks[:k] if true_relevance.get(str(rank), 0) > 0)
+    
+    # Count total relevant documents
+    total_relevant = sum(1 for score in true_relevance.values() if score > 0)
+    
+    if total_relevant == 0:
+        return 0.0
+    
+    return relevant_in_topk / total_relevant
 
 def evaluate_dataset(dataset_name: str, 
                     index_path: str,
@@ -118,8 +129,9 @@ def evaluate_dataset(dataset_name: str,
             qrels_dict[row['query-id']] = {}
         qrels_dict[row['query-id']][str(row['corpus-id'])] = row['score']
     
-    # Calculate NDCG@k for each query
+    # Calculate NDCG@k and Recall@k for each query
     ndcg_scores = {}
+    recall_scores = {}
     retrieval_times = []
     
     for i, query_embedding in tqdm(enumerate(query_embeddings)):
@@ -171,43 +183,28 @@ def evaluate_dataset(dataset_name: str,
         qid_list.append(query_id)
         top_k_docid_list.append(corpus_ids)
 
-        # Calculate NDCG@k
+        # Calculate NDCG@k and Recall@k
         if str(query_id) in qrels_dict:
             ndcg = calculate_ndcg(corpus_ids, qrels_dict[str(query_id)], k)
             ndcg_scores[str(query_id)] = ndcg
+            recall = calculate_recall(corpus_ids, qrels_dict[str(query_id)], k)
+            recall_scores[str(query_id)] = recall
     
     avg_retrieval_time = np.mean(retrieval_times)
     print(f"Average retrieval time: {avg_retrieval_time:.4f} seconds")
 
-    # Calculate mean NDCG@k
+    # Calculate mean NDCG@k and mean Recall@k
     mean_ndcg = np.mean(list(ndcg_scores.values()))
+    mean_recall = np.mean(list(recall_scores.values()))
     
     return {
         'ndcg_scores': ndcg_scores,
         'mean_ndcg': mean_ndcg,
+        'recall_scores': recall_scores,
+        'mean_recall': mean_recall,
         'qid_list': qid_list,
         'top_k_docid_list': top_k_docid_list,
     }
-
-if __name__ == "__main__":
-    args = get_config()
-    os.environ["CUDA_VISIBLE_DEVICES"] = args.device
-    logging.basicConfig(level=logging.INFO)
-    model_name = args.model.split("/")[-1]
-
-    result_dir = f"./result/{args.benchmark}/{args.dataset}/{model_name}/{args.query_type}"
-    os.makedirs(result_dir, exist_ok=True)
-
-    logging.info(f"Loading model")
-    model = SentenceTransformer(args.model, device=f"cuda:0", trust_remote_code=True)
-    tokenizer = AutoTokenizer.from_pretrained(args.model)
-
-    # Example usage
-    benchmark = args.benchmark
-    dataset_name = args.dataset  # or any other BEIR dataset
-    
-    # convert uppercase
-    capitalized_benchmark_name = benchmark.upper()
 
 if __name__ == "__main__":
     args = get_config()
@@ -227,16 +224,16 @@ if __name__ == "__main__":
     
     capitalized_benchmark_name = benchmark.upper()
 
-    data_dir = "embeddings"
-    index_path = f"{data_dir}/{benchmark}/{dataset_name}/original_docs/{model_name}_{args.index_type}_index.faiss"
+    data_dir = "../../data_preprocess/eval_data/embeddings"
+    index_path = f"{data_dir}/{benchmark}/{dataset_name}/ori/{model_name}_{args.index_type}_index.faiss"
     
-    if args.query_type == "original_query":
-        query_path = f"data/{capitalized_benchmark_name}/{dataset_name}/query.parquet"
+    if args.query_type == "ori":
+        query_path = f"../../data_preprocess/eval_data/{capitalized_benchmark_name}/{dataset_name}/query.parquet"
     else:
-        query_path = f"data/{capitalized_benchmark_name}/{dataset_name}/{args.query_type}_query.parquet"
+        query_path = f"../../data_preprocess/eval_data/{capitalized_benchmark_name}/{dataset_name}/{args.query_type}_query.parquet"
 
-    qrel_path = f"data/{capitalized_benchmark_name}/{dataset_name}/qrel.parquet"
-    index_id_dict_path = f"{data_dir}/{benchmark}/{dataset_name}/original_docs/index_id_dict.pkl"
+    qrel_path = f"../../data_preprocess/eval_data/{capitalized_benchmark_name}/{dataset_name}/qrel.parquet"
+    index_id_dict_path = f"{data_dir}/{benchmark}/{dataset_name}/ori/index_id_dict.pkl"
 
     results = evaluate_dataset(
         dataset_name=dataset_name,
@@ -250,16 +247,18 @@ if __name__ == "__main__":
         tokenizer=tokenizer
     )
 
-    # save ndcg scores with text
+    # save metrics with text
     mean_ndcg = results['mean_ndcg']
-    with open(f"{result_dir}/ndcg10_scores.txt", "w") as f:
+    mean_recall = results['mean_recall']
+    with open(f"{result_dir}/metrics_scores.txt", "w") as f:
         f.write(f"Model: {model_name}\n")
         f.write(f"Benchmark: {benchmark}\n")
         f.write(f"Dataset: {dataset_name}\n")
         f.write(f"Query Type: {args.query_type}\n")
         f.write(f"Index Type: {args.index_type}\n")
         f.write("\n")
-        f.write(f"Mean NDCG@10 for {dataset_name}: {mean_ndcg:.4f}\n")
+        f.write(f"Mean NDCG@{args.k} for {dataset_name}: {mean_ndcg:.4f}\n")
+        f.write(f"Mean Recall@{args.k} for {dataset_name}: {mean_recall:.4f}\n")
 
     # save result
     qid_list = results['qid_list']
@@ -273,4 +272,5 @@ if __name__ == "__main__":
     print(analysis_df.head())
     analysis_df.to_parquet(f"{result_dir}/analysis_df.parquet", index=False)
     
-    logging.info(f"Mean NDCG@10 for {dataset_name}: {results['mean_ndcg']*100:.1f}")
+    logging.info(f"Mean NDCG@{args.k} for {dataset_name}: {results['mean_ndcg']*100:.1f}")
+    logging.info(f"Mean Recall@{args.k} for {dataset_name}: {results['mean_recall']*100:.1f}")

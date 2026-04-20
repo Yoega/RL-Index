@@ -30,7 +30,7 @@ def parse_args():
     parser.add_argument("--num_generations", type=int, default=16, help="Number of generations per prompt")
     parser.add_argument("--max_seq_length", type=int, default=8000, help="Max prompt length")
     parser.add_argument("--max_completion_length", type=int, default=500, help="Max completion length")
-    parser.add_argument("--max_steps", type=int, default=150, help="Total training steps")
+    parser.add_argument("--max_steps", type=int, default=1000, help="Total training steps")
     parser.add_argument("--learning_rate", type=float, default=1e-6, help="Learning rate")
     parser.add_argument("--beta", type=float, default=0.008, help="Beta parameter for GRPO")
 
@@ -80,7 +80,7 @@ def create_training_args(args) -> GRPOConfig:
     """Create GRPO training configuration from argparse args."""
     output_dir = os.path.join(
         args.output_dir,
-        f"RL_qwen_{args.training_model_path.split('/')[-1]}_{args.train_data_path.split('/')[-1]}_seed{args.seed}_maxcomp{args.max_completion_length}_numgen{args.num_generations}"
+        f"RL_{args.scoring_model_path.split('/')[-1]}_{args.training_model_path.split('/')[-1]}_{args.train_data_path.split('/')[-1]}_seed{args.seed}_maxcomp{args.max_completion_length}_numgen{args.num_generations}"
     )
     logging.info(f"Training outputs will be saved to: {output_dir}")
     return GRPOConfig(

@@ -45,7 +45,7 @@ def get_config():
     parser.add_argument("--benchmark", type=str, default="bright", help="The benchmark to use")
     parser.add_argument("--dataset", type=str, default="pony", help="The dataset to use")
     parser.add_argument("--step", type=int, default=500, help="The step size for processing documents")
-    parser.add_argument("--version", type=str, default="aug", help="The version of the embeddings")
+    parser.add_argument("--version", type=str, default="aug", help="The version of the embeddings, either 'ori' for original documents or 'aug' for augmented documents")
     parser.add_argument("--id_col_name", type=str, default="id", help="The column name containing the document IDs")
     parser.add_argument("--index_type", type=str, default="flat", help="The type of index to use")
     args = parser.parse_args()
@@ -55,7 +55,7 @@ def get_config():
 
 
 def embed_and_index(args):
-    output_dir = f"embeddings/{args.benchmark}/{args.dataset}/{args.version}"
+    output_dir = f"../../data_preprocess/eval_data/embeddings/{args.benchmark}/{args.dataset}/{args.version}"
     os.makedirs(output_dir, exist_ok=True)
 
     model_name = args.model.split("/")[-1]

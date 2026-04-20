@@ -23,9 +23,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Process sampled question-answer JSON and save as HuggingFace dataset."
     )
-    parser.add_argument("--input", type=str, default="data/v2_train.parquet", 
+    parser.add_argument("--input", type=str, default="train_data/v2_train.parquet", 
                         help="Path to input parquet file") 
-    parser.add_argument("--output_dir", type=str, default="data/built_dataset",
+    parser.add_argument("--output_dir", type=str, default="train_data/built_dataset",
                         help="Directory to save the output parquet")
     parser.add_argument("--output_name", type=str, default="v2_train",
                         help="Name for output file")
