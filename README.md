@@ -1,4 +1,4 @@
-# Project Name: RL-Index: Reinforcement Learning for Retrieval Index Reasoning
+# RL-Index: Reinforcement Learning for Retrieval Index Reasoning
 
 An end-to-end pipeline for enhancing retrieval by RL-based index reasoning.
 
