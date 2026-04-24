@@ -1,6 +1,9 @@
 # Exclude BRIGHT evaluation data
 data_preprocess/eval_data/BRIGHT/
+data_preprocess/eval_data/embeddings/bright/
 data_preprocess/train_data/built_dataset/v2_train/train.parquet
+data_preprocess/train_data/v2_train.parquet
+outputs/
 
 # Common Python/system files
 __pycache__/

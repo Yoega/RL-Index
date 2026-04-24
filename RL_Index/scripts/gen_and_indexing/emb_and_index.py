@@ -1,7 +1,7 @@
 """
 This script is designed to generate embeddings for documents and build a FAISS index for efficient retrieval. 
 It supports both flat and HNSW indexing methods. 
-The supported models include "intfloat/e5-mistral-7b-instruct" and "Alibaba-NLP/gte-Qwen1.5-7B-instruct", which have different maximum token lengths.
+The supported models include "sentence-transformers/all-mpnet-base-v2" and "BAAI/bge-large-en-v1.5".
 
 """
 
@@ -62,13 +62,13 @@ def embed_and_index(args):
     
     model = SentenceTransformer(args.model, device=f"cuda:0", trust_remote_code=True)
     
-    
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
+    embedding_dim = model.get_sentence_embedding_dimension()
     
     if args.index_type == "flat":
-        index = faiss.IndexIDMap(faiss.IndexFlatIP(4096))
+        index = faiss.IndexIDMap(faiss.IndexFlatIP(embedding_dim))
     elif args.index_type == "hnsw":
-        index = faiss.IndexHNSWFlat(4096, 32, faiss.METRIC_INNER_PRODUCT)
+        index = faiss.IndexHNSWFlat(embedding_dim, 32, faiss.METRIC_INNER_PRODUCT)
         index.hnsw.efConstruction = 200
         index.hnsw.efSearch = 64
         index = faiss.IndexIDMap(index)
@@ -97,13 +97,12 @@ def embed_and_index(args):
     for i in tqdm(range(0, len(content))):
         c = safe_convert_to_string(content[i])
         tokenized_c = tokenizer.tokenize(c)
-        if len(tokenized_c) > MODEL_MAX_LEN_DICT[args.model]:
-            tokenized_c = tokenized_c[:MODEL_MAX_LEN_DICT[args.model]]
+        if len(tokenized_c) > model.get_max_seq_length():
+            tokenized_c = tokenized_c[:model.get_max_seq_length()]
             c = tokenizer.convert_tokens_to_string(tokenized_c)
-
-        result = model.encode(c, use_tqdm=False)
-        embedding = result[0].outputs.embedding
-        embedding = np.array(embedding, dtype=np.float32).reshape(1, -1)
+    
+        result = model.encode(c, show_progress_bar=False)
+        embedding = np.array(result, dtype=np.float32).reshape(1, -1)
         faiss.normalize_L2(embedding)
         index.add_with_ids(embedding, np.array([i], dtype=np.int64))
 

@@ -1,0 +1,66 @@
+python scripts/evaluation/question_rewriting.py \
+         --model_path /anvil/scratch/x-ylei3/TongSearch-QR/TongSearch-QR/outputs/V2_no_think_seed5202_maxcomp500_numgen16/checkpoint-400 \
+	     --output_file data_evaluation/TongSearch-QR-1.5B_reasoned_results.json
+
+
+python -m ipykernel install --user --name "test_env" --display-name "Python (test_env)"
+
+
+Interactive:
+sinteractive --time=4:00:00 --gpus-per-node=4 --mem=256G --cpus-per-task=32 --partition=ai -A nairr250188-ai
+
+vscode-remote://ssh-remote%2Banvil.rcac.purdue.edu/anvil/scratch/x-ylei3/command.txt
+
+source ~/.bashrc
+
+# allocation usage
+mybalance
+
+# connect to a job
+srun --jobid=15885008 --pty bash
+
+# check ip
+hostname -I
+
+# check jobs
+squeue -u x-ylei3
+
+# set cuda visible
+CUDA_VISIBLE_DEVICES=1
+
+# create the environment
+conda env create -f agenindx.yml
+
+torchrun \
+--nnodes=2 \
+--nproc_per_node=4 \
+--rdzv_id=multi_node_test \
+--rdzv_backend=c10d \
+--rdzv_endpoint="192.168.92.68:29500" \
+nano_r1_script.py
+
+
+cp -r /anvil/scratch/x-ylei3/eval_sft/embeddings/bright/hq_dataset/no_generator/document/O/* /anvil/scratch/x-ylei3/eval_sft/embeddings/bright/hq_dataset/original_document/
+scp -r OneDrive_1_10-30-2025.zip x-ylei3@anvil.rcac.purdue.edu:/anvil/scratch/x-ylei3/eval_sft/embeddings/bright/robotics/original_document/
+
+
+cp -r /anvil/scratch/x-ylei3/eval_sft/result/bright/biology/all-mpnet-base-v2/original_query/no_generator/default/K/default_instruction/0.3/sft_analysis_df.parquet /anvil/scratch/x-ylei3/eval_sft/data/BRIGHT/biology/
+
+
+# check whether install one package
+pip show datasets
+
+du -sh /home/x-ylei3
+
+bash run_bright_eval.sh \
+       bm25_with_reasoner \
+       /anvil/scratch/x-ylei3/TongSearch-QR/TongSearch-QR/data_evaluation/TongSearch-QR-1.5B_reasoned_results.json \
+       ./outputs
+
+
+export LD_LIBRARY_PATH=$HOME/miniconda3/envs/agenindx/lib:$LD_LIBRARY_PATH
+
+export LD_LIBRARY_PATH=/anvil/scratch/x-ylei3/miniconda3/envs/index/lib:$LD_LIBRARY_PATH
+
+
+/anvil/scratch/x-ylei3/eval_sft/result/bright/aops/all-mpnet-base-v2/ts_reason/ts_reason_analysis_df.parquet

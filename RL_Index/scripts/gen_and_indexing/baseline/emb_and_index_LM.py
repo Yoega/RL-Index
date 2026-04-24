@@ -54,7 +54,7 @@ def get_config():
 
 
 def embed_and_index(args):
-    output_dir = f"../../data_preprocess/eval_data/embeddings/{args.benchmark}/{args.dataset}/{args.version}"
+    output_dir = f"embeddings/{args.benchmark}/{args.dataset}/{args.version}"
     os.makedirs(output_dir, exist_ok=True)
 
     model_name = args.model.split("/")[-1]

@@ -10,6 +10,7 @@ import numpy as np
 from vllm import LLM
 from argparse import ArgumentParser
 from transformers import AutoTokenizer
+from sentence_transformers import SentenceTransformer
 import pandas as pd
 import os
 import pickle
@@ -44,7 +45,7 @@ def get_config():
     parser.add_argument("--benchmark", type=str, default="bright", help="The benchmark to use")
     parser.add_argument("--dataset", type=str, default="pony", help="The dataset to use")
     parser.add_argument("--step", type=int, default=500, help="The step size for processing documents")
-    parser.add_argument("--version", type=str, default="aug", help="The version of the embeddings")
+    parser.add_argument("--version", type=str, default="aug", help="The version of the embeddings, either 'ori' for original documents or 'aug' for augmented documents")
     parser.add_argument("--id_col_name", type=str, default="id", help="The column name containing the document IDs")
     parser.add_argument("--index_type", type=str, default="flat", help="The type of index to use")
     args = parser.parse_args()
@@ -59,13 +60,8 @@ def embed_and_index(args):
 
     model_name = args.model.split("/")[-1]
     
-    model = LLM(
-        model=args.model,
-        device="cuda:0",
-        task="embed",
-        trust_remote_code=True,
-        seed=42
-    )
+    model = SentenceTransformer(args.model, device=f"cuda:0", trust_remote_code=True)
+    
     
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     
@@ -111,7 +107,7 @@ def embed_and_index(args):
         faiss.normalize_L2(embedding)
         index.add_with_ids(embedding, np.array([i], dtype=np.int64))
 
-    faiss.write_index(index, f"{output_dir}/LM_{model_name}_{args.index_type}_index.faiss")
+    faiss.write_index(index, f"{output_dir}/{model_name}_{args.index_type}_index.faiss")
     logging.info(f"Indexing done")
 
 
