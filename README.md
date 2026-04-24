@@ -374,103 +374,30 @@ RL_Index/
 │   ├── gen_and_indexing/
 │   │   ├── baseline/              # Baseline embedding scripts
 │   │   └── run_doc_rewriting.sh   # Document augmentation
+│   │   └── run_emb_and_indx.sh   # Embedding and Indexing
 │   └── eval/
 │       ├── eval.sh                # Evaluation for dense models
 │       └── eval_LM.sh             # Evaluation for LM models
 ├── outputs/                       # Training outputs and checkpoints
-├── embeddings/                    # Index storage
 ├── results/                       # Evaluation results
 └── README.md                      # This file
 ```
 
----
-
-## Troubleshooting
-
-### Common Issues
-
-#### 1. CUDA Out of Memory
-
-**Error:** `CUDA out of memory`
-
-**Solutions:**
-- Reduce batch size: `python emb_and_index.py --batch_size 32`
-- Use gradient checkpointing in training
-- Use a smaller embedding model
-- Use `--index_type hnsw` for memory-efficient indexing
-
-#### 2. vLLM Server Connection Failed
-
-**Error:** `Connection refused` when running training
-
-**Solutions:**
-```bash
-# Check if vLLM server is running
-curl http://localhost:8000/v1/models
-
-# Check GPU availability
-nvidia-smi
-
-# Try a different port in run_server.sh
-```
-
-#### 3. Slow Embedding Generation
-
-**Causes and fixes:**
-- Small batch size → Increase to `--batch_size 256`
-- CPU bottleneck → Check GPU utilization with `nvidia-smi`
-- Model loading time → Pre-warm model before batch processing
-
-#### 4. Database/Index File Not Found
-
-**Error:** `FileNotFoundError: index.faiss`
-
-**Solutions:**
-```bash
-# Verify index files exist
-ls -la embeddings/bright/<dataset>/
-
-# Regenerate indices if missing
-python scripts/gen_and_indexing/emb_and_index.py --dataset <name>
-```
-
-### Getting Help
-
-1. Check logs: `tail -f outputs/train.log`
-2. Search existing issues: https://github.com/Yoega/RL-Index/issues
-3. Create new issue with error message, command, GPU info, and Python version
 
 ---
 
 ## Performance Benchmarks
 
-### Hardware
-- GPU: NVIDIA A100 (40GB)
-- CPU: Intel Xeon
-- Memory: 128GB RAM
-
 ### Results on BRIGHT Benchmark
 
-| Model | Baseline NDCG@10 | Augmented NDCG@10 | Improvement |
-|-------|------------------|-------------------|-------------|
-| BGE-Large | 0.425 | 0.487 | +14.4% |
-| E5-Mistral | 0.441 | 0.501 | +13.6% |
-| GTE-Qwen | 0.438 | 0.498 | +13.7% |
-| MPNET-Base | 0.398 | 0.451 | +13.3% |
-
+TO BE ADDED
 ---
 
 ## Citation
 
 If you use RL-Index in your research, please cite:
 
-```bibtex
-@article{lei2024rlindex,
-  title={RL-Index: Reinforcement Learning for Retrieval Index Reasoning},
-  author={Lei, Yilei},
-  year={2024}
-}
-```
+TO BE ADDED
 
 ---
 
@@ -486,13 +413,6 @@ Contributions are welcome! Please feel free to submit issues and pull requests.
 
 ---
 
-## Contact & Support
-
-- **GitHub Issues:** https://github.com/Yoega/RL-Index/issues
-- **Documentation:** See docs/ for detailed guides
-
----
-
 ## Acknowledgments
 
 - Built on top of [TongSearch-QR](https://github.com/tongsearch/tongsearch-qr)
@@ -502,4 +422,4 @@ Contributions are welcome! Please feel free to submit issues and pull requests.
 
 ---
 
-**Last Updated:** April 2024 | **Version:** 1.0.0
+**Last Updated:** April 2026 | **Version:** 1.0.0
