@@ -260,14 +260,14 @@ The augmentation process adds:
 ### Overview
 Create embeddings using pre-trained models and build FAISS indices for efficient similarity-based retrieval.
 
-### Supported Embedding Models
+<!-- ### Supported Embedding Models
 
 | Model | Context Length | Dimension | Speed | Best Use Case |
 |-------|-----------------|-----------|-------|---------------|
 | `BAAI/bge-large-en-v1.5` | 512 | 1024 | Fast | General retrieval |
 | `sentence-transformers/all-mpnet-base-v2` | 384 | 768 | Very Fast | Resource-limited |
 | `Alibaba-NLP/gte-Qwen1.5-7B-instruct` | 16384 | 4096 | Slower | Long documents |
-| `intfloat/e5-mistral-7b-instruct` | 32768 | 1024 | Slower | Very long documents |
+| `intfloat/e5-mistral-7b-instruct` | 32768 | 1024 | Slower | Very long documents | -->
 
 ### Index Types
 
@@ -356,7 +356,7 @@ cd RL_Index/scripts/eval
 bash eval_LM.sh
 ```
 
-### Evaluation Metrics
+<!-- ### Evaluation Metrics
 
 | Metric | Description | Range | Better When |
 |--------|-------------|-------|-------------|
@@ -364,13 +364,13 @@ bash eval_LM.sh
 | **Recall@1** | Fraction of queries with relevant doc in top 1 | 0-1 | Higher |
 | **Recall@5** | Fraction of queries with relevant doc in top 5 | 0-1 | Higher |
 | **Recall@10** | Fraction of queries with relevant doc in top 10 | 0-1 | Higher |
-| **Recall@20** | Fraction of queries with relevant doc in top 20 | 0-1 | Higher |
+| **Recall@20** | Fraction of queries with relevant doc in top 20 | 0-1 | Higher | -->
 
-### Output Files
+<!-- ### Output Files
 
 - `results/`: Retrieved documents for analysis
 - `metrics/`: Computed evaluation metrics
-- `logs/`: Evaluation logs and debug information
+- `logs/`: Evaluation logs and debug information -->
 
 ---
 
