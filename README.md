@@ -14,26 +14,6 @@ RL-Index uses reinforcement learning techniques to improve document retrieval by
 - 🔄 Document reasoning and augmentation with RL
 - 🏗️ Distributed training with vLLM
 
-## Quick Start
-
-```bash
-# 1. Clone and setup
-git clone https://github.com/Yoega/RL-Index.git
-cd RL-Index
-pip install -r requirements.txt
-
-# 2. Prepare data
-cd data_preprocess
-python get_eval_dataset.py
-
-# 3. Embed and index documents
-cd ../scripts/gen_and_indexing/baseline
-bash run_emb_and_indx.sh
-
-# 4. Run evaluation
-cd ../../eval
-bash eval.sh
-```
 
 ## Table of Contents
 
@@ -52,12 +32,55 @@ bash eval.sh
 
 ## Requirements
 
+### System Requirements
 - **Python:** 3.10 or higher
-- **CUDA:** 11.8 or higher (for GPU acceleration)
+- **CUDA:** 12.x (NVIDIA CUDA Runtime)
 - **GPU VRAM:**
   - 8GB minimum (for inference)
   - 24GB+ recommended (for model training)
 - **Disk Space:** 100GB+ (for datasets and embeddings)
+
+### Python Packages
+
+#### Core Dependencies
+- **PyTorch:** torch==2.6.0, torchaudio==2.6.0, torchvision==0.21.0
+- **Transformers:** transformers==4.57.3
+- **Language Models & Inference:**
+  - vllm==0.8.4
+  - outlines==0.1.11
+  - trl==0.23.0
+  - llguidance==0.7.30
+
+#### Data & ML Libraries
+- **Data Processing:** pandas==2.3.3, datasets==4.4.2, pyarrow==22.0.0
+- **ML Framework:** scikit-learn==1.7.2, scipy==1.15.3
+- **Numerical Computing:** numpy==1.26.4, numba==0.61.2
+- **Embeddings & Retrieval:**
+  - sentence-transformers==4.0.1
+  - faiss-gpu-cu12==1.10.0
+
+#### Training & Optimization
+- **Training Tools:**
+  - accelerate==1.12.0
+  - deepspeed==0.17.5
+  - cloudpickle==3.1.2
+
+#### API & Integration
+- **LLM APIs:** anthropic==0.76.0, openai==2.14.0, mistral-common==1.8.8
+- **Web Framework:** fastapi==0.128.0, uvicorn==0.40.0, starlette==0.50.0
+- **Monitoring:** wandb==0.21.4, sentry-sdk==2.48.0
+
+#### CUDA/GPU Support
+- nvidia-cuda-runtime-cu12==12.4.127
+- nvidia-cublas-cu12==12.4.5.8
+- nvidia-cudnn-cu12==9.1.0.70
+- nvidia-nccl-cu12==2.21.5
+
+#### Additional Tools
+- **Utilities:** pydantic==2.12.5, pyyaml==6.0.3, click==8.3.1, rich==14.2.0
+- **Development:** ipython==8.37.0, jupyter-client==8.8.0, ipykernel==7.2.0
+
+See [requirements.txt](requirements.txt) for the complete package list with versions.
 
 ## Installation
 
@@ -74,14 +97,6 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
-```
-
-### Verify Installation
-
-```bash
-python -c "import torch; print(f'PyTorch version: {torch.__version__}')"
-python -c "import faiss; print('FAISS installed successfully')"
-python -c "import transformers; print('Transformers installed successfully')"
 ```
 
 ---
@@ -124,14 +139,15 @@ python get_eval_dataset.py
 
 **Output:**
 - BRIGHT evaluation datasets in `eval_data/BRIGHT/`
-- Domains: aops, bio, economics, leetcode, pony, robotics, stackoverflow, theoremqa
-- Download time: ~30-60 minutes
-- Total size: ~15GB
+- Domains: "biology" "earth_science" "economics" "psychology" "sustainable_living" "robotics" "stackoverflow" "pony" "aops" "theoremqa_questions" "theoremqa_theorems" "leetcode"
+- Total size: ~472M
 
-### Supported Datasets
-| Dataset | Documents | Queries | Domains |
-|---------|-----------|---------|---------|
-| BRIGHT  | ~10M      | ~2K     | 8 |
+### Dataset Statistics
+
+| Metric | Biology | Earth Science | Economics | Psychology | Robotics | Stack Overflow | Sustainable Living | LeetCode | Pony | AoPS | TheoremQA-Q | TheoremQA-T |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Queries ($Q$)** | 103 | 116 | 103 | 101 | 101 | 117 | 108 | 142 | 112 | 111 | 194 | 76 |
+| **Documents ($D$)** | 57,359 | 121,249 | 50,220 | 52,835 | 61,961 | 107,081 | 60,792 | 413,932 | 7,894 | 188,002 | 188,002 | 23,839 |
 
 ---
 
@@ -398,12 +414,6 @@ TO BE ADDED
 If you use RL-Index in your research, please cite:
 
 TO BE ADDED
-
----
-
-## License
-
-This project is licensed under the MIT License. See LICENSE file for details.
 
 ---
 
