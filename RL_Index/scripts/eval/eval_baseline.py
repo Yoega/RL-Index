@@ -24,7 +24,7 @@ def get_config():
     parser.add_argument("--benchmark", type=str, default="bright")
     parser.add_argument("--dataset", type=str, default="pony")
     parser.add_argument("--id_col_name", type=str, default="id")
-    parser.add_argument("--query_type", type=str, default="original_query")
+    parser.add_argument("--query_type", type=str, default="ori")
     parser.add_argument("--index_type", type=str, default="flat")
     parser.add_argument("--k", type=int, default=10)
     args = parser.parse_args()
@@ -260,17 +260,6 @@ if __name__ == "__main__":
         f.write(f"Mean NDCG@{args.k} for {dataset_name}: {mean_ndcg:.4f}\n")
         f.write(f"Mean Recall@{args.k} for {dataset_name}: {mean_recall:.4f}\n")
 
-    # save result
-    qid_list = results['qid_list']
-    top_10_docid_list = results['top_10_docid_list']
-
-    analysis_df = pd.DataFrame({
-        'query-id': qid_list,
-        'top_10_docid': top_10_docid_list,    
-    })
-
-    print(analysis_df.head())
-    analysis_df.to_parquet(f"{result_dir}/analysis_df.parquet", index=False)
     
     logging.info(f"Mean NDCG@{args.k} for {dataset_name}: {results['mean_ndcg']*100:.1f}")
     logging.info(f"Mean Recall@{args.k} for {dataset_name}: {results['mean_recall']*100:.1f}")

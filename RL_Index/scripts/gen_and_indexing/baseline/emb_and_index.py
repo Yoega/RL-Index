@@ -40,12 +40,11 @@ def get_config():
     parser.add_argument("--model", type=str, default="Alibaba-NLP/gte-Qwen1.5-7B-instruct", help="The model to use for embedding generation")
     parser.add_argument("--input_file", type=str, default="", help="The path to the input file containing documents")
     parser.add_argument("--index_file", type=str, default="data/embedding/index.faiss", help="The path to save the generated FAISS index")
-    parser.add_argument("--document_col_name", type=str, default="aug_content", help="The column name containing the document content")
+    parser.add_argument("--document_col_name", type=str, default="content", help="The column name containing the document content")
     parser.add_argument("--device", type=str, default="0", help="The device to use for embedding generation")
     parser.add_argument("--benchmark", type=str, default="bright", help="The benchmark to use")
     parser.add_argument("--dataset", type=str, default="pony", help="The dataset to use")
-    parser.add_argument("--step", type=int, default=500, help="The step size for processing documents")
-    parser.add_argument("--version", type=str, default="aug", help="The version of the embeddings, either 'ori' for original documents or 'aug' for augmented documents")
+    parser.add_argument("--version", type=str, default="ori", help="The version of the embeddings, either 'ori' for original documents or 'aug' for augmented documents")
     parser.add_argument("--id_col_name", type=str, default="id", help="The column name containing the document IDs")
     parser.add_argument("--index_type", type=str, default="flat", help="The type of index to use")
     args = parser.parse_args()
@@ -55,25 +54,27 @@ def get_config():
 
 
 def embed_and_index(args):
-    output_dir = f"../../data_preprocess/eval_data/embeddings/{args.benchmark}/{args.dataset}/{args.version}"
+    output_dir = f"../../../data_preprocess/eval_data/embeddings/{args.benchmark}/{args.dataset}/{args.version}"
     os.makedirs(output_dir, exist_ok=True)
 
     model_name = args.model.split("/")[-1]
     
     model = SentenceTransformer(args.model, device=f"cuda:0", trust_remote_code=True)
     
+    # Get the actual embedding dimension from the model
+    embedding_dim = model.get_sentence_embedding_dimension()
     
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     
     if args.index_type == "flat":
-        index = faiss.IndexIDMap(faiss.IndexFlatIP(4096))
+        index = faiss.IndexIDMap(faiss.IndexFlatIP(embedding_dim))
     elif args.index_type == "hnsw":
-        index = faiss.IndexHNSWFlat(4096, 32, faiss.METRIC_INNER_PRODUCT)
+        index = faiss.IndexHNSWFlat(embedding_dim, 32, faiss.METRIC_INNER_PRODUCT)
         index.hnsw.efConstruction = 200
         index.hnsw.efSearch = 64
         index = faiss.IndexIDMap(index)
         
-    args.input_file = f"{args.input_file}/{args.dataset}_{args.step}.parquet"
+    args.input_file = f"{args.input_file}/{args.dataset}/document.parquet"
     document = pd.read_parquet(args.input_file)
     print(document)
 
@@ -93,17 +94,17 @@ def embed_and_index(args):
 
     logging.info(f"saving index_id_dict")
     logging.info(f"Embedding documents")
+    max_seq_length = MODEL_MAX_LEN_DICT.get(args.model, model.get_max_seq_length())
 
     for i in tqdm(range(0, len(content))):
         c = safe_convert_to_string(content[i])
-        tokenized_c = tokenizer.tokenize(c)
-        if len(tokenized_c) > MODEL_MAX_LEN_DICT[args.model]:
-            tokenized_c = tokenized_c[:MODEL_MAX_LEN_DICT[args.model]]
-            c = tokenizer.convert_tokens_to_string(tokenized_c)
+        
+        # Truncate using tokenizer's encode with max_length
+        tokens = tokenizer.encode(c, max_length=max_seq_length, truncation=True)
+        c = tokenizer.decode(tokens, skip_special_tokens=True)
 
-        result = model.encode(c, use_tqdm=False)
-        embedding = result[0].outputs.embedding
-        embedding = np.array(embedding, dtype=np.float32).reshape(1, -1)
+        result = model.encode(c, show_progress_bar=False)
+        embedding = np.array(result, dtype=np.float32).reshape(1, -1)
         faiss.normalize_L2(embedding)
         index.add_with_ids(embedding, np.array([i], dtype=np.int64))
 

@@ -17,7 +17,7 @@ source ~/.bashrc
 mybalance
 
 # connect to a job
-srun --jobid=15885008 --pty bash
+ 
 
 # check ip
 hostname -I

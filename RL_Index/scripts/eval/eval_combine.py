@@ -12,8 +12,6 @@ import pickle
 
 MODEL_MAX_LEN_DICT = {
     "intfloat/e5-mistral-7b-instruct": 8192,
-    "Salesforce/SFR-Embedding-Mistral": 4090,
-    "GritLM/GritLM-7B": 8192,
     "Alibaba-NLP/gte-Qwen1.5-7B-instruct": 16384,
 }
 

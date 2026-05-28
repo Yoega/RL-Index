@@ -1,0 +1,11 @@
+2026-05-25 22:39:54,108 - INFO - ======== Training Started ========
+2026-05-25 22:39:54,108 - INFO - Using seed: 5202
+2026-05-25 22:39:54,108 - INFO - GPU count available: 3
+2026-05-25 22:39:54,108 - INFO - Loading scoring model from: sentence-transformers/all-mpnet-base-v2
+2026-05-25 22:39:54,112 - INFO - Use pytorch device_name: cuda
+2026-05-25 22:39:54,112 - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
+2026-05-25 22:39:58,184 - INFO - Scoring model loaded successfully
+2026-05-25 22:40:01,208 - INFO - Loading model and tokenizer from meta-llama/Llama-3.2-3B-Instruct ...
+2026-05-25 22:40:14,377 - INFO - Loading dataset from data_preprocess/train_data/built_dataset/v2_train ...
+2026-05-25 22:40:14,980 - INFO - Dataset loaded with 30874 samples.
+2026-05-25 22:40:14,981 - INFO - Training outputs will be saved to: outputs/RL_all-mpnet-base-v2_Llama-3.2-3B-Instruct_v2_train_seed5202_maxcomp500_numgen16

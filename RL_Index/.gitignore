@@ -4,6 +4,9 @@ data_preprocess/eval_data/embeddings/bright/
 data_preprocess/train_data/built_dataset/v2_train/train.parquet
 data_preprocess/train_data/v2_train.parquet
 outputs/
+wandb/
+scripts/eval/result/
+xlangai___bright/
 
 # Common Python/system files
 __pycache__/
