@@ -101,7 +101,7 @@ def create_training_args(args) -> GRPOConfig:
         per_device_train_batch_size=args.per_device_train_batch_size,
         gradient_accumulation_steps=args.grad_accum_steps,
         num_generations=args.num_generations,
-        max_prompt_length=args.max_seq_length,
+        # max_prompt_length=args.max_seq_length,
         max_completion_length=args.max_completion_length,
         max_steps=args.max_steps,
         max_grad_norm=0.1,

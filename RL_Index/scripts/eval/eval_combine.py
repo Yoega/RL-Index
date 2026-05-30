@@ -27,6 +27,8 @@ def get_config():
     parser.add_argument("--index_type", type=str, default="flat")
     parser.add_argument("--k", type=int, default=10)
     parser.add_argument("--analysis_mode", type=bool, default=False)
+    # add the aug version as an argument
+    parser.add_argument("--aug_version", type=str, required=True)
     args = parser.parse_args()
     return args
 
@@ -214,22 +216,22 @@ if __name__ == "__main__":
     dataset_name = args.dataset
     capitalized_benchmark_name = benchmark.upper()
 
-    data_dir = "embeddings"
+    data_dir = "../../data_preprocess/eval_data/embeddings"
     # Original and augmented index paths
-    original_index_path = f"{data_dir}/{benchmark}/{dataset_name}/original_document/LM_{model_name}_{args.index_type}_index.faiss"
-    aug_index_path = f"{data_dir}/{benchmark}/{dataset_name}/aug/LM_{model_name}_{args.index_type}_index.faiss"
+    original_index_path = f"{data_dir}/{benchmark}/{dataset_name}/ori/{model_name}_{args.index_type}_index.faiss"
+    aug_index_path = f"{data_dir}/{benchmark}/{dataset_name}/{args.aug_version}/{model_name}_{args.index_type}_index.faiss"
     
     # Query and qrels paths
     if args.query_type == "original_query":
-        query_path = f"data/{capitalized_benchmark_name}/{dataset_name}/query.parquet"
+        query_path = f"../../data_preprocess/eval_data/{capitalized_benchmark_name}/{dataset_name}/query.parquet"
     else:
-        query_path = f"data/{capitalized_benchmark_name}/{dataset_name}/{args.query_type}_query.parquet"
+        query_path = f"../../data_preprocess/eval_data/{capitalized_benchmark_name}/{dataset_name}/{args.query_type}_query.parquet"
 
-    qrel_path = f"data/{capitalized_benchmark_name}/{dataset_name}/qrel.parquet"
+    qrel_path = f"../../data_preprocess/eval_data/{capitalized_benchmark_name}/{dataset_name}/qrel.parquet"
     
     # Index ID dict paths
-    original_index_id_dict_path = f"{data_dir}/{benchmark}/{dataset_name}/original_document/index_id_dict.pkl"
-    aug_index_id_dict_path = f"{data_dir}/{benchmark}/{dataset_name}/aug/index_id_dict.pkl"
+    original_index_id_dict_path = f"{data_dir}/{benchmark}/{dataset_name}/ori/index_id_dict.pkl"
+    aug_index_id_dict_path = f"{data_dir}/{benchmark}/{dataset_name}/{args.aug_version}/index_id_dict.pkl"
 
     results = evaluate_dataset(
         dataset_name=dataset_name,

@@ -1,11 +1,93 @@
-2026-05-25 22:39:54,108 - INFO - ======== Training Started ========
-2026-05-25 22:39:54,108 - INFO - Using seed: 5202
-2026-05-25 22:39:54,108 - INFO - GPU count available: 3
-2026-05-25 22:39:54,108 - INFO - Loading scoring model from: sentence-transformers/all-mpnet-base-v2
-2026-05-25 22:39:54,112 - INFO - Use pytorch device_name: cuda
-2026-05-25 22:39:54,112 - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
-2026-05-25 22:39:58,184 - INFO - Scoring model loaded successfully
-2026-05-25 22:40:01,208 - INFO - Loading model and tokenizer from meta-llama/Llama-3.2-3B-Instruct ...
-2026-05-25 22:40:14,377 - INFO - Loading dataset from data_preprocess/train_data/built_dataset/v2_train ...
-2026-05-25 22:40:14,980 - INFO - Dataset loaded with 30874 samples.
-2026-05-25 22:40:14,981 - INFO - Training outputs will be saved to: outputs/RL_all-mpnet-base-v2_Llama-3.2-3B-Instruct_v2_train_seed5202_maxcomp500_numgen16
+2026-05-28 22:19:11,999 - INFO - ======== Training Started ========
+2026-05-28 22:19:12,000 - INFO - Using seed: 5202
+2026-05-28 22:19:12,000 - INFO - GPU count available: 3
+2026-05-28 22:19:12,000 - INFO - Loading scoring model from: sentence-transformers/all-mpnet-base-v2
+2026-05-28 22:19:12,003 - INFO - No device provided, using cuda:0
+2026-05-28 22:19:12,099 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:12,111 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:12,156 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:12,167 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:12,168 - INFO - Loading SentenceTransformer model from sentence-transformers/all-mpnet-base-v2.
+2026-05-28 22:19:12,215 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:12,235 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:12,279 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:12,291 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/README.md "HTTP/1.1 200 OK"
+2026-05-28 22:19:12,339 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:12,349 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/modules.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:12,395 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:12,405 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:12,455 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-05-28 22:19:12,564 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:12,575 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:12,630 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:12,641 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:13,147 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-05-28 22:19:13,190 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-28 22:19:13,239 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-28 22:19:13,295 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-28 22:19:13,366 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:13,378 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:13,419 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:13,429 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:13,473 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:13,484 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:13,533 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:13,544 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:13,632 - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-28 22:19:13,680 - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-28 22:19:13,757 - INFO - HTTP Request: HEAD https://huggingface.co/sentence-transformers/all-mpnet-base-v2/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-05-28 22:19:13,770 - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/sentence-transformers/all-mpnet-base-v2/e8c3b32edf5434bc2275fc9bab85f82640a19130/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:13,821 - INFO - HTTP Request: GET https://huggingface.co/api/models/sentence-transformers/all-mpnet-base-v2 "HTTP/1.1 200 OK"
+2026-05-28 22:19:16,464 - INFO - Scoring model loaded successfully
+2026-05-28 22:19:21,517 - INFO - Loading model and tokenizer from meta-llama/Llama-3.2-3B-Instruct ...
+2026-05-28 22:19:21,580 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:21,674 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:29,072 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/generation_config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:29,122 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:29,174 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:29,227 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-28 22:19:29,272 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-28 22:19:30,072 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct "HTTP/1.1 200 OK"
+2026-05-28 22:19:30,090 - INFO - Loading dataset from data_preprocess/train_data/built_dataset/v2_train ...
+2026-05-28 22:19:30,197 - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/parquet/parquet.py "HTTP/1.1 404 Not Found"
+2026-05-28 22:19:30,519 - INFO - Dataset loaded with 30874 samples.
+2026-05-28 22:19:30,521 - INFO - Training outputs will be saved to: outputs/RL_all-mpnet-base-v2_Llama-3.2-3B-Instruct_v2_train_seed5202_maxcomp500_numgen16
+2026-05-28 22:19:33,610 - INFO - mpicc -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /anvil/scratch/x-ylei3/miniconda3/envs/qwen3-grpo/include -fPIC -O2 -isystem /anvil/scratch/x-ylei3/miniconda3/envs/qwen3-grpo/include -fPIC -c /tmp/tmpq1bqctrq/test.c -o /tmp/tmpq1bqctrq/test.o
+2026-05-28 22:19:33,706 - INFO - mpicc /tmp/tmpq1bqctrq/test.o -laio -o /tmp/tmpq1bqctrq/a.out
+2026-05-28 22:19:33,859 - INFO - mpicc -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /anvil/scratch/x-ylei3/miniconda3/envs/qwen3-grpo/include -fPIC -O2 -isystem /anvil/scratch/x-ylei3/miniconda3/envs/qwen3-grpo/include -fPIC -c /tmp/tmprpivbe15/test.c -o /tmp/tmprpivbe15/test.o
+2026-05-28 22:19:33,935 - INFO - mpicc /tmp/tmprpivbe15/test.o -L/usr/local/cuda -L/usr/local/cuda/lib64 -lcufile -o /tmp/tmprpivbe15/a.out
+2026-05-28 22:19:34,163 - INFO - mpicc -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /anvil/scratch/x-ylei3/miniconda3/envs/qwen3-grpo/include -fPIC -O2 -isystem /anvil/scratch/x-ylei3/miniconda3/envs/qwen3-grpo/include -fPIC -c /tmp/tmp1ou0ni4l/test.c -o /tmp/tmp1ou0ni4l/test.o
+2026-05-28 22:19:34,230 - INFO - mpicc /tmp/tmp1ou0ni4l/test.o -laio -o /tmp/tmp1ou0ni4l/a.out
+2026-05-28 22:19:41,568 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:41,618 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:41,660 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:41,707 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/model.safetensors "HTTP/1.1 404 Not Found"
+2026-05-28 22:19:41,757 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/model.safetensors.index.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:41,815 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct/revision/main "HTTP/1.1 200 OK"
+2026-05-28 22:19:52,505 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/generation_config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:52,569 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:52,620 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-28 22:19:52,672 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:52,720 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:52,780 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-28 22:19:52,829 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-28 22:19:52,884 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-05-28 22:19:52,941 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-05-28 22:19:53,083 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:53,129 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:53,183 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:53,234 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-05-28 22:19:53,281 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-05-28 22:19:53,331 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-05-28 22:19:54,114 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct "HTTP/1.1 200 OK"
+2026-05-28 22:19:55,551 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/generation_config.json "HTTP/1.1 200 OK"
+2026-05-28 22:20:00,719 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct "HTTP/1.1 200 OK"
+2026-05-28 22:20:00,775 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct/tree/main?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-05-28 22:20:00,823 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/model.safetensors.index.json "HTTP/1.1 200 OK"
+2026-05-28 22:20:01,139 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct/revision/main "HTTP/1.1 200 OK"
+2026-05-28 22:20:01,189 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/model.safetensors.index.json "HTTP/1.1 200 OK"
+2026-05-28 22:20:31,286 - INFO - Starting training loop ...
+,016 - INFO - HTTP Request: GET https://huggingface.co/api/models/meta-llama/Llama-3.2-3B-Instruct/revision/main "HTTP/1.1 200 OK"
+2026-05-28 22:20:01,065 - INFO - HTTP Request: HEAD https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/model.safetensors.index.json "HTTP/1.1 200 OK"
+2026-05-28 22:20:31,289 - INFO - Starting training loop ...
+2026-05-28 22:20:31,315 - WARNING - [RANK 0] Gradient accumulation steps mismatch: GradientAccumulationPlugin has 1, DeepSpeed config has 16. Using DeepSpeed's value.

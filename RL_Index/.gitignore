@@ -7,6 +7,8 @@ outputs/
 wandb/
 scripts/eval/result/
 xlangai___bright/
+command.txt
+training.log
 
 # Common Python/system files
 __pycache__/

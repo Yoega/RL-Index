@@ -61,7 +61,7 @@ def embed_and_index(args):
     
     model = LLM(
         model=args.model,
-        device="cuda:0",
+        # device="cuda:0",
         task="embed",
         trust_remote_code=True,
         seed=42
