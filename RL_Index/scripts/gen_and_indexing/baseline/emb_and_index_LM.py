@@ -39,11 +39,10 @@ def get_config():
     parser.add_argument("--model", type=str, default="Alibaba-NLP/gte-Qwen1.5-7B-instruct", help="The model to use for embedding generation")
     parser.add_argument("--input_file", type=str, default="", help="The path to the input file containing documents")
     parser.add_argument("--index_file", type=str, default="data/embedding/index.faiss", help="The path to save the generated FAISS index")
-    parser.add_argument("--document_col_name", type=str, default="aug_content", help="The column name containing the document content")
+    parser.add_argument("--document_col_name", type=str, default="content", help="The column name containing the document content")
     parser.add_argument("--device", type=str, default="0", help="The device to use for embedding generation")
     parser.add_argument("--benchmark", type=str, default="bright", help="The benchmark to use")
     parser.add_argument("--dataset", type=str, default="pony", help="The dataset to use")
-    parser.add_argument("--step", type=int, default=500, help="The step size for processing documents")
     parser.add_argument("--version", type=str, default="aug", help="The version of the embeddings")
     parser.add_argument("--id_col_name", type=str, default="id", help="The column name containing the document IDs")
     parser.add_argument("--index_type", type=str, default="flat", help="The type of index to use")
@@ -54,7 +53,7 @@ def get_config():
 
 
 def embed_and_index(args):
-    output_dir = f"embeddings/{args.benchmark}/{args.dataset}/{args.version}"
+    output_dir = f"../../../data_preprocess/eval_data/embeddings/{args.benchmark}/{args.dataset}/{args.version}"
     os.makedirs(output_dir, exist_ok=True)
 
     model_name = args.model.split("/")[-1]
@@ -77,7 +76,7 @@ def embed_and_index(args):
         index.hnsw.efSearch = 64
         index = faiss.IndexIDMap(index)
         
-    args.input_file = f"{args.input_file}/{args.dataset}_{args.step}.parquet"
+    args.input_file = f"{args.input_file}/{args.dataset}/document.parquet"
     document = pd.read_parquet(args.input_file)
     print(document)
 

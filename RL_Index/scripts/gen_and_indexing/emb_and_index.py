@@ -44,7 +44,7 @@ def get_config():
     parser.add_argument("--device", type=str, default="0", help="The device to use for embedding generation")
     parser.add_argument("--benchmark", type=str, default="bright", help="The benchmark to use")
     parser.add_argument("--dataset", type=str, default="pony", help="The dataset to use")
-    parser.add_argument("--step", type=int, default=500, help="The step size for processing documents")
+    parser.add_argument("--step", type=str, default="500", help="The step size for processing documents")
     parser.add_argument("--version", type=str, default="aug", help="The version of the embeddings, either 'ori' for original documents or 'aug' for augmented documents")
     parser.add_argument("--id_col_name", type=str, default="id", help="The column name containing the document IDs")
     parser.add_argument("--index_type", type=str, default="flat", help="The type of index to use")

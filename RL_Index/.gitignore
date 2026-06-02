@@ -10,6 +10,7 @@ xlangai___bright/
 command.txt
 training.log
 
+analysis/
 # Common Python/system files
 __pycache__/
 *.py[cod]

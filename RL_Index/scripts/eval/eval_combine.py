@@ -137,7 +137,7 @@ def evaluate_dataset(dataset_name: str,
         faiss.normalize_L2(normalize_query_embedding)
 
         excluded_ids = query_df.loc[i, "excluded_ids"]
-        first_k = k * 100  # in case some ids are excluded
+        first_k = k * 200  # in case some ids are excluded
 
         # Search original and augmented indices
         ori_scores, ori_indices = original_index.search(normalize_query_embedding, first_k)

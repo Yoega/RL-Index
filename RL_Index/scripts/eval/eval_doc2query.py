@@ -5,10 +5,11 @@ from typing import Dict, List
 from tqdm import tqdm
 from argparse import ArgumentParser
 from transformers import AutoTokenizer
-from vllm import LLM
+from sentence_transformers import SentenceTransformer
 import os
 import logging
 import pickle
+import time
 
 MODEL_MAX_LEN_DICT = {
     "intfloat/e5-mistral-7b-instruct": 8192,
@@ -23,11 +24,9 @@ def get_config():
     parser.add_argument("--benchmark", type=str, default="bright")
     parser.add_argument("--dataset", type=str, default="pony")
     parser.add_argument("--id_col_name", type=str, default="id")
-    parser.add_argument("--query_type", type=str, default="original_query")
+    parser.add_argument("--query_type", type=str, default="ori")
     parser.add_argument("--index_type", type=str, default="flat")
     parser.add_argument("--k", type=int, default=10)
-    parser.add_argument("--analysis_mode", type=bool, default=False)
-    parser.add_argument("--aug_version", type=str, default="La_Qwen_no_RL")
     args = parser.parse_args()
     return args
 
@@ -55,153 +54,157 @@ def calculate_ndcg(predicted_ranks: List[int], true_relevance: Dict[str, int], k
     
     return dcg / idcg
 
-# compute recall
 def calculate_recall(predicted_ranks: List[int], true_relevance: Dict[str, int], k: int) -> float:
     """Calculate Recall@k for a single query"""
-    relevant_items = set(true_relevance.keys())
-    retrieved_items = set(str(rank) for rank in predicted_ranks[:k])
+    # Count relevant documents in top-k
+    relevant_in_topk = sum(1 for rank in predicted_ranks[:k] if true_relevance.get(str(rank), 0) > 0)
     
-    true_positives = len(relevant_items.intersection(retrieved_items))
-    total_relevant = len(relevant_items)
+    # Count total relevant documents
+    total_relevant = sum(1 for score in true_relevance.values() if score > 0)
     
     if total_relevant == 0:
         return 0.0
     
-    return true_positives / total_relevant
+    return relevant_in_topk / total_relevant
 
 def evaluate_dataset(dataset_name: str, 
-                    original_index_path: str,
-                    aug_index_path: str,
-                    model: LLM,
+                    index_path: str,
+                    model: SentenceTransformer,
                     query_path: str,
                     qrel_path: str,
-                    original_index_id_dict_path: str,
-                    aug_index_id_dict_path: str,
+                    index_id_dict_path: str,
                     args,
                     k: int = 10,
                     tokenizer: AutoTokenizer = None) -> Dict[str, float]:
-    """Evaluate NDCG@k and Recall@k by combining results from two indices"""
+    """Evaluate NDCG@k for a dataset using Faiss index"""
 
     qid_list = []
     top_k_docid_list = []
 
-    # Load Faiss indices
-    original_index = faiss.read_index(original_index_path)
-    aug_index = faiss.read_index(aug_index_path)
+    # Load Faiss index
+    index = faiss.read_index(index_path)
 
-    # Load data
+    # Load query 
     logging.info(f"Loading query")
     query_df = pd.read_parquet(query_path)
     print(f"query_df shape: {query_df.shape}")
     print(query_df.head())
 
-    with open(original_index_id_dict_path, "rb") as f:
-        original_index_id_dict = pickle.load(f)
+    # Load index_id_dict
+    with open(index_id_dict_path, "rb") as f:
+        index_id_dict = pickle.load(f)
 
-    with open(aug_index_id_dict_path, "rb") as f:
-        aug_index_id_dict = pickle.load(f)
-        print(f"aug_index_id_dict loaded, length: {len(aug_index_id_dict)}")
-
-    # Extract query embeddings
+    # extract query embedding
     query_embeddings = []
+    embedding_times = []
+
     logging.info(f"Extracting query embeddings")
     for _, row in tqdm(query_df.iterrows()):            
         query = row['query']
-        tokenized_query = tokenizer.tokenize(query)
-        if len(tokenized_query) > MODEL_MAX_LEN_DICT[args.model]:
-            tokenized_query = tokenized_query[:MODEL_MAX_LEN_DICT[args.model]]
-            query = tokenizer.convert_tokens_to_string(tokenized_query)
-
-        query_embedding = model.encode(query, use_tqdm=False)
-        query_embeddings.append(query_embedding[0].outputs.embedding)
+        
+        start_time = time.time()
+        query_embedding = model.encode(query, show_progress_bar=False)
+        end_time = time.time()
+        embedding_times.append(end_time - start_time)
+        query_embeddings.append(query_embedding)
+    
+    avg_embedding_time = np.mean(embedding_times)
+    print(f"Average query embedding time: {avg_embedding_time:.4f} seconds")
 
     query_embeddings = np.array(query_embeddings, dtype=np.float32)
+    
     logging.info(f"query embeddings shape: {query_embeddings.shape}")
     
     # Load qrels
     qrel_df = pd.read_parquet(qrel_path)
     print(f"qrel_df shape: {qrel_df.shape}")
     print(qrel_df.head())
+    
     logging.info(f"qrel df loaded")
     
-    # Convert qrels to dictionary
+    # Convert qrels to dictionary format {query_id: {doc_id: relevance}}
     qrels_dict = {}
     for _, row in qrel_df.iterrows():
         if row['query-id'] not in qrels_dict:
             qrels_dict[row['query-id']] = {}
         qrels_dict[row['query-id']][str(row['corpus-id'])] = row['score']
     
-    # Calculate scores for each query
+    # Calculate NDCG@k and Recall@k for each query
     ndcg_scores = {}
     recall_scores = {}
+    retrieval_times = []
     
     for i, query_embedding in tqdm(enumerate(query_embeddings)):
-        # Normalize and search both indices
+        start_time = time.time()
+        # Search using Faiss
         normalize_query_embedding = query_embedding.reshape(1, -1)
+        
+        # normalize query embedding for cosine similarity
         faiss.normalize_L2(normalize_query_embedding)
 
         excluded_ids = query_df.loc[i, "excluded_ids"]
-        first_k = k * 100  # in case some ids are excluded
 
-        # Search original and augmented indices
-        ori_scores, ori_indices = original_index.search(normalize_query_embedding, first_k)
-        aug_scores, aug_indices = aug_index.search(normalize_query_embedding, first_k)
+        first_k = k * 200
+        scores, I = index.search(normalize_query_embedding, first_k)
 
         query_id = query_df.loc[i, "query-id"]
-
-        # Convert indices to corpus IDs
-        ori_corpus_ids = [str(original_index_id_dict[idx]) for idx in ori_indices[0]]
-        aug_corpus_ids = [str(aug_index_id_dict[idx]) for idx in aug_indices[0]]
-
-        # Combine scores: merge results and weighted sum for overlapping documents
-        combined_scores = {}
-        for score, corpus_id in zip(ori_scores[0], ori_corpus_ids):
-            combined_scores[corpus_id] = score
         
-        for score, corpus_id in zip(aug_scores[0], aug_corpus_ids):
-            if corpus_id in combined_scores:
-                combined_scores[corpus_id] += score  # Weighted sum for overlapping docs
-            else:
-                combined_scores[corpus_id] = score
+        # convert I to corpus-id
+        corpus_ids_list = [str(index_id_dict[idx]) for idx in I[0]]
 
-        # Sort and filter
-        sorted_results = sorted(combined_scores.items(), key=lambda x: x[1], reverse=True)
-        corpus_ids = [corpus_id for corpus_id, _ in sorted_results if corpus_id not in excluded_ids]
-
-        if len(corpus_ids) < k:
-            raise ValueError(f"len(corpus_ids) < k: {len(corpus_ids)} < {k}")
+        # Create lists of (score, corpus_id) tuples
+        corpus_score_id = list(zip(scores[0], corpus_ids_list))
         
-        corpus_ids = corpus_ids[:k]
+        # Create a dictionary for scores for easy lookup
+        scores_dict = {corpus_id: score for score, corpus_id in corpus_score_id}
+        
+        # Combine all scores and create the final list
+        final_scores = [(score, corpus_id) for corpus_id, score in scores_dict.items()]
 
-        # Calculate metrics
+        if len(final_scores) < k:
+            raise ValueError(f"len(final_scores) < k: {len(final_scores)} < {k}")
+        
+        # Sort by score in descending order
+        final_scores.sort(reverse=True)
+        
+        # Remove excluded IDs
+        final_scores = [score_id for score_id in final_scores if score_id[1] not in excluded_ids]
+
+        if len(final_scores) < k:
+            raise ValueError(f"len(final_scores) < k: {len(final_scores)} < {k}")
+        
+        # Truncate to k
+        final_scores = final_scores[:k]
+
+        corpus_ids = [score_id[1] for score_id in final_scores]
+        end_time = time.time()
+        retrieval_times.append(end_time - start_time)
+
+        qid_list.append(query_id)
+        top_k_docid_list.append(corpus_ids)
+
+        # Calculate NDCG@k and Recall@k
         if str(query_id) in qrels_dict:
             ndcg = calculate_ndcg(corpus_ids, qrels_dict[str(query_id)], k)
             ndcg_scores[str(query_id)] = ndcg
-            
             recall = calculate_recall(corpus_ids, qrels_dict[str(query_id)], k)
             recall_scores[str(query_id)] = recall
-        
-        if args.analysis_mode:
-            qid_list.append(query_id)
-            top_k_docid_list.append(corpus_ids)
     
-    # Calculate mean scores
+    avg_retrieval_time = np.mean(retrieval_times)
+    print(f"Average retrieval time: {avg_retrieval_time:.4f} seconds")
+
+    # Calculate mean NDCG@k and mean Recall@k
     mean_ndcg = np.mean(list(ndcg_scores.values()))
     mean_recall = np.mean(list(recall_scores.values()))
     
-    result = {
+    return {
         'ndcg_scores': ndcg_scores,
-        'recall_scores': recall_scores,
         'mean_ndcg': mean_ndcg,
+        'recall_scores': recall_scores,
         'mean_recall': mean_recall,
+        'qid_list': qid_list,
+        'top_k_docid_list': top_k_docid_list,
     }
-    
-    if args.analysis_mode:
-        result['qid_list'] = qid_list
-        result['top_k_docid_list'] = top_k_docid_list
-    
-    return result
-
 
 if __name__ == "__main__":
     args = get_config()
@@ -213,71 +216,50 @@ if __name__ == "__main__":
     os.makedirs(result_dir, exist_ok=True)
 
     logging.info(f"Loading model")
-    model = LLM(
-        model=args.model,
-        device="cuda:0",
-        seed=42,
-        trust_remote_code=True,
-    )
+    model = SentenceTransformer(args.model, device=f"cuda:0", trust_remote_code=True)
     tokenizer = AutoTokenizer.from_pretrained(args.model)
 
     benchmark = args.benchmark
     dataset_name = args.dataset
+    
     capitalized_benchmark_name = benchmark.upper()
 
     data_dir = "../../data_preprocess/eval_data/embeddings"
-    # Original and augmented index paths
-    original_index_path = f"{data_dir}/{benchmark}/{dataset_name}/ori/LM_{model_name}_{args.index_type}_index.faiss"
-    aug_index_path = f"{data_dir}/{benchmark}/{dataset_name}/{args.aug_version}/LM_{model_name}_{args.index_type}_index.faiss"
+    index_path = f"{data_dir}/{benchmark}/{dataset_name}/Doc2Query_10/{model_name}_{args.index_type}_index.faiss"
     
-    # Query and qrels paths
-    if args.query_type == "original_query":
+    if args.query_type == "ori":
         query_path = f"../../data_preprocess/eval_data/{capitalized_benchmark_name}/{dataset_name}/query.parquet"
     else:
         query_path = f"../../data_preprocess/eval_data/{capitalized_benchmark_name}/{dataset_name}/{args.query_type}_query.parquet"
 
     qrel_path = f"../../data_preprocess/eval_data/{capitalized_benchmark_name}/{dataset_name}/qrel.parquet"
-    
-    # Index ID dict paths
-    original_index_id_dict_path = f"{data_dir}/{benchmark}/{dataset_name}/ori/index_id_dict.pkl"
-    aug_index_id_dict_path = f"{data_dir}/{benchmark}/{dataset_name}/{args.aug_version}/index_id_dict.pkl"
+    index_id_dict_path = f"{data_dir}/{benchmark}/{dataset_name}/Doc2Query_10/index_id_dict.pkl"
 
     results = evaluate_dataset(
         dataset_name=dataset_name,
-        original_index_path=original_index_path,
-        aug_index_path=aug_index_path,
+        index_path=index_path,
         model=model,
         query_path=query_path,
         qrel_path=qrel_path,
-        original_index_id_dict_path=original_index_id_dict_path,
-        aug_index_id_dict_path=aug_index_id_dict_path,
+        index_id_dict_path=index_id_dict_path,
         args=args,
         k=args.k,
         tokenizer=tokenizer
     )
 
-    # Save results
+    # save metrics with text
     mean_ndcg = results['mean_ndcg']
     mean_recall = results['mean_recall']
-    
-    with open(f"{result_dir}/combined_scores.txt", "w") as f:
+    with open(f"{result_dir}/metrics_scores.txt", "w") as f:
         f.write(f"Model: {model_name}\n")
         f.write(f"Benchmark: {benchmark}\n")
         f.write(f"Dataset: {dataset_name}\n")
         f.write(f"Query Type: {args.query_type}\n")
         f.write(f"Index Type: {args.index_type}\n")
         f.write("\n")
-        f.write(f"Mean Recall@{args.k}: {mean_recall:.4f}\n")
-        f.write(f"Mean NDCG@{args.k}: {mean_ndcg:.4f}\n")
+        f.write(f"Mean NDCG@{args.k} for {dataset_name}: {mean_ndcg:.4f}\n")
+        f.write(f"Mean Recall@{args.k} for {dataset_name}: {mean_recall:.4f}\n")
 
-    # Save analysis results if in analysis mode
-    if args.analysis_mode:
-        analysis_df = pd.DataFrame({
-            'query-id': results['qid_list'],
-            'top_k_docid': results['top_k_docid_list'],    
-        })
-        analysis_df.to_parquet(f"{result_dir}/analysis_df.parquet", index=False)
     
-    print(f"Mean NDCG@{args.k}: {results['mean_ndcg']*100:.1f}%")
-    print(f"Mean Recall@{args.k}: {results['mean_recall']*100:.1f}%")
-    print(f"Result dir: {result_dir}")
+    logging.info(f"Mean NDCG@{args.k} for {dataset_name}: {results['mean_ndcg']*100:.1f}")
+    logging.info(f"Mean Recall@{args.k} for {dataset_name}: {results['mean_recall']*100:.1f}")
