@@ -411,9 +411,19 @@ TO BE ADDED
 
 ## Citation
 
-If you use RL-Index in your research, please cite:
+If you use RL-Index in your research, please cite our [paper](https://arxiv.org/abs/2606.16316):
 
-TO BE ADDED
+```
+misc{lei2026rlindexreinforcementlearningretrieval,
+      title={RL-Index: Reinforcement Learning for Retrieval Index Reasoning}, 
+      author={Yongjia Lei and Nedim Lipka and Zhisheng Qi and Utkarsh Sahu and Koustava Goswami and Franck Dernoncourt and Ryan A. Rossi and Yu Wang},
+      year={2026},
+      eprint={2606.16316},
+      archivePrefix={arXiv},
+      primaryClass={cs.IR},
+      url={https://arxiv.org/abs/2606.16316}, 
+}
+```
 
 ---
 
