@@ -188,7 +188,7 @@ bash run_train.sh
 - `vllm_server_url`: vLLM server address
 
 ### Training Curve (Example)
-
+![Training Curve](figures/training_curve.png)
 
 ---
 
@@ -209,22 +209,20 @@ bash run_doc_rewriting.sh
 ```
 
 **Configuration in `run_doc_rewriting.sh`:**
-- `ckpt_path`: Path to trained model checkpoint
-- `data_dir`: Directory containing original documents
-- `output_dir`: Where to save augmented documents
-- `batch_size`: Inference batch size
+- `step`: step of the model checkpoint
+- `model_path`: Path to trained model checkpoint
+- `input_path`: Directory containing original documents
+- `output_path`: Where to save augmented documents
+- `dataset_name`: Name of dataset
+- `rewritten_content`: Document/query rewrite
+
 
 **Output:**
 - Augmented documents with reasoning insights
 - Format: `.parquet` files in organized dataset structure
-- Expected time: 2-6 hours depending on dataset size
 
-### Document Augmentation Details
-
-The augmentation process adds:
-- **Key points:** Important information extracted from documents
-- **Explanations:** Reasoning and context for better understanding
-- **Main topics:** Categorization and topic labeling
+### Case Study of Document Augmentation
+![Alt Text](figures/case_study_code.png)
 
 ---
 
@@ -244,48 +242,31 @@ Create embeddings using pre-trained models and build FAISS indices for efficient
 
 ### Index Types
 
-- **Flat Index:** Exact brute-force search (recommended for datasets < 1M docs)
-- **HNSW:** Approximate nearest neighbor search (recommended for large datasets)
+- **Flat Index:** Exact brute-force search
+- **HNSW:** Approximate nearest neighbor search
 
 ### Execution
 
-#### Option 1: Embed Baseline (Original) Documents
+#### Step 1: Embed Baseline (Original) Documents
 
 ```bash
 cd RL_Index/scripts/gen_and_indexing/baseline
-python emb_and_index.py \
-  --model "BAAI/bge-large-en-v1.5" \
-  --dataset "pony" \
-  --benchmark "bright" \
-  --device "0" \
-  --index_type "flat"
+bash run_emb_and_indx.sh
 ```
 
-#### Option 2: Embed Augmented Documents
+#### Step 2: Embed Augmented Documents
 
+For Dense Retrieval Models (BGE, SBERT), run:
 ```bash
 cd RL_Index/scripts/gen_and_indexing
-python emb_and_index.py \
-  --model "BAAI/bge-large-en-v1.5" \
-  --dataset "pony" \
-  --benchmark "bright" \
-  --device "0" \
-  --index_type "flat" \
-  --step 1000 \
-  --version "La_SBERT_RL_1000"
+bash run_emb_and_indx.sh
 ```
 
-### Parameter Details
+For Large Language Model Embeddings (GTE-Qwen, E5), run:
 
-- `--model`: Embedding model name (default: `BAAI/bge-large-en-v1.5`)
-- `--dataset`: Dataset to index (`pony`, `aops`, `leetcode`, `biology`, etc.)
-- `--benchmark`: Benchmark name (default: `bright`)
-- `--device`: GPU device ID (e.g., `0`, `1`)
-- `--index_type`: `flat` for exact search or `hnsw` for approximate
-- `--step`: RL training step for augmented documents
-- `--version`: Version identifier for tracking different augmentations
-- `--components`: Components to use (`I`, `O`, `M`, `K`, `E` or combinations like `M+K+E`)
-- `--is_multi_content`: Whether to use multiple content versions
+```bash
+bash run_emb_and_idx_LM.sh
+```
 
 ### Output Structure
 
@@ -315,7 +296,7 @@ Evaluate retrieval performance on the BRIGHT benchmark using the created indices
 
 ### Execution
 
-#### For Dense Retrieval Models (BGE, MPNET)
+#### For Dense Retrieval Models (BGE, SBERT)
 
 ```bash
 cd RL_Index/scripts/eval
@@ -386,7 +367,16 @@ TO BE ADDED
 
 If you use RL-Index in your research, please cite:
 
-TO BE ADDED
+```bibtex
+@article{lei2026rl,
+  title={RL-Index: Reinforcement Learning for Retrieval Index Reasoning},
+  author={Lei, Yongjia and Lipka, Nedim and Qi, Zhisheng and Sahu, Utkarsh and Goswami, Koustava and Dernoncourt, Franck and Rossi, Ryan A and Wang, Yu},
+  journal={arXiv preprint arXiv:2606.16316},
+  year={2026}
+}
+```
+
+
 
 ---
 

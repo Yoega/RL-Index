@@ -225,7 +225,7 @@ if __name__ == "__main__":
     capitalized_benchmark_name = benchmark.upper()
 
     data_dir = "../../data_preprocess/eval_data/embeddings"
-    index_path = f"{data_dir}/{benchmark}/{dataset_name}/Doc2Query_10/{model_name}_{args.index_type}_index.faiss"
+    index_path = f"{data_dir}/{benchmark}/{dataset_name}/Doc2Query/{model_name}_{args.index_type}_index.faiss"
     
     if args.query_type == "ori":
         query_path = f"../../data_preprocess/eval_data/{capitalized_benchmark_name}/{dataset_name}/query.parquet"
@@ -233,7 +233,7 @@ if __name__ == "__main__":
         query_path = f"../../data_preprocess/eval_data/{capitalized_benchmark_name}/{dataset_name}/{args.query_type}_query.parquet"
 
     qrel_path = f"../../data_preprocess/eval_data/{capitalized_benchmark_name}/{dataset_name}/qrel.parquet"
-    index_id_dict_path = f"{data_dir}/{benchmark}/{dataset_name}/Doc2Query_10/index_id_dict.pkl"
+    index_id_dict_path = f"{data_dir}/{benchmark}/{dataset_name}/Doc2Query/index_id_dict.pkl"
 
     results = evaluate_dataset(
         dataset_name=dataset_name,
