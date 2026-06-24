@@ -1,4 +1,4 @@
-for dataset in "biology" "earth_science" "economics" "psychology" "sustainable_living" "robotics" "stackoverflow" "pony" "aops" "theoremqa_questions" "theoremqa_theorems"
+for dataset in "leetcode"
 do
   python eval_doc2query.py --dataset "$dataset" --model "BAAI/bge-large-en-v1.5"
 done
