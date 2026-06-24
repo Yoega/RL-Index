@@ -8,7 +8,7 @@ RL-Index uses reinforcement learning techniques to improve document retrieval by
 
 **Key Features:**
 - 🚀 End-to-end training and evaluation pipeline
-- 🧠 Multiple embedding model support (BGE, E5, GTE-Qwen, MPNET)
+- 🧠 Multiple embedding model support (BGE, E5, GTE-Qwen, SBERT)
 - 📊 Comprehensive evaluation metrics (NDCG, Recall@K)
 - ⚡ FAISS-based efficient retrieval indexing
 - 🔄 Document reasoning and augmentation with RL
@@ -35,9 +35,7 @@ RL-Index uses reinforcement learning techniques to improve document retrieval by
 ### System Requirements
 - **Python:** 3.10 or higher
 - **CUDA:** 12.x (NVIDIA CUDA Runtime)
-- **GPU VRAM:**
-  - 8GB minimum (for inference)
-  - 24GB+ recommended (for model training)
+- **GPU:** 4 x NVIDIA H100 80GB GPUs
 - **Disk Space:** 100GB+ (for datasets and embeddings)
 
 ### Python Packages
@@ -110,7 +108,7 @@ Prepare training data from the TongSearch-QR benchmark for model fine-tuning. Th
 
 1. **Download Data**
    - Download the training dataset from: [TongSearch-QR V2 Dataset](https://drive.google.com/file/d/1dIyckJzUM5dpL7Xf6nr90m9j_Nk27HZZ/view?usp=sharing)
-   - Extract and place the downloaded files in `RL_Index/train_data/`
+   - Extract and place the downloaded files in `RL_Index/data_preprocess/train_data/`
 
 2. **Format the Data**
    ```bash
@@ -121,7 +119,6 @@ Prepare training data from the TongSearch-QR benchmark for model fine-tuning. Th
    **Output:**
    - Formatted training dataset in `train_data/built_dataset/`
    - Training file: `v2_train/train.parquet`
-   - Processing time: ~10-30 minutes depending on data size
 
 ---
 
@@ -140,7 +137,7 @@ python get_eval_dataset.py
 **Output:**
 - BRIGHT evaluation datasets in `eval_data/BRIGHT/`
 - Domains: "biology" "earth_science" "economics" "psychology" "sustainable_living" "robotics" "stackoverflow" "pony" "aops" "theoremqa_questions" "theoremqa_theorems" "leetcode"
-- Total size: ~472M
+- Total size: ~470M
 
 ### Dataset Statistics
 
@@ -155,11 +152,6 @@ python get_eval_dataset.py
 
 ### Overview
 Train the Llama 3.2-3B-Instruct model using the GRPO (Group Relative Policy Optimization) algorithm for RL-based index reasoning.
-
-### Prerequisites
-- Two separate compute nodes with GPU support
-- Each node with 24GB+ VRAM
-- Network connectivity between nodes
 
 ### Setup & Execution
 
@@ -195,27 +187,8 @@ bash run_train.sh
 - `save_steps`: Save checkpoint every N steps
 - `vllm_server_url`: vLLM server address
 
-**Expected training time:** 
-- 100 epochs on single GPU: ~24-48 hours
-- Training will save checkpoints at specified intervals
+### Training Curve (Example)
 
-### Monitoring Training
-
-```bash
-# Check training logs
-tail -f outputs/train_logs.txt
-
-# Monitor GPU usage (on training node)
-nvidia-smi -l 1
-```
-
-### Saving and Loading Checkpoints
-
-Checkpoints are automatically saved to `outputs/checkpoints/` during training. To resume training:
-
-```bash
-bash run_train.sh --resume_from_checkpoint outputs/checkpoints/checkpoint-1000
-```
 
 ---
 
