@@ -356,11 +356,11 @@ RL_Index/
 
 ---
 
-## Performance Benchmarks
+<!-- ## Performance Benchmarks
 
 ### Results on BRIGHT Benchmark
 
-TO BE ADDED
+TO BE ADDED -->
 ---
 
 ## Citation
@@ -396,4 +396,4 @@ Contributions are welcome! Please feel free to submit issues and pull requests.
 
 ---
 
-**Last Updated:** April 2026 | **Version:** 1.0.0
+**Last Updated:** June 2026
