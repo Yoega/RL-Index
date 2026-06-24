@@ -25,8 +25,7 @@ RL-Index uses reinforcement learning techniques to improve document retrieval by
 6. [Document Reasoning & Augmentation](#document-reasoning--augmentation)
 7. [Embedding and Indexing](#embedding-and-indexing)
 8. [Evaluation](#evaluation)
-9. [Troubleshooting](#troubleshooting)
-10. [Citation](#citation)
+9. [Citation](#citation)
 
 ---
 
