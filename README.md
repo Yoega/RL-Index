@@ -365,18 +365,19 @@ TO BE ADDED
 
 ## Citation
 
-If you use RL-Index in your research, please cite:
+If you use RL-Index in your research, please cite our [paper](https://arxiv.org/abs/2606.16316):
 
-```bibtex
-@article{lei2026rl,
-  title={RL-Index: Reinforcement Learning for Retrieval Index Reasoning},
-  author={Lei, Yongjia and Lipka, Nedim and Qi, Zhisheng and Sahu, Utkarsh and Goswami, Koustava and Dernoncourt, Franck and Rossi, Ryan A and Wang, Yu},
-  journal={arXiv preprint arXiv:2606.16316},
-  year={2026}
+```
+misc{lei2026rlindexreinforcementlearningretrieval,
+      title={RL-Index: Reinforcement Learning for Retrieval Index Reasoning}, 
+      author={Yongjia Lei and Nedim Lipka and Zhisheng Qi and Utkarsh Sahu and Koustava Goswami and Franck Dernoncourt and Ryan A. Rossi and Yu Wang},
+      year={2026},
+      eprint={2606.16316},
+      archivePrefix={arXiv},
+      primaryClass={cs.IR},
+      url={https://arxiv.org/abs/2606.16316}, 
 }
 ```
-
-
 
 ---
 
